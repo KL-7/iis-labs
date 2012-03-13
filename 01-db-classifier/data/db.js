@@ -28,18 +28,6 @@ var DB = [
     'then': { 'name': 'MonetDB' }
   },
   {
-    'if'  : { 'GPL based license': 'yes', 'changes release under a different license': 'no' },
-    'then': { 'license': 'AGPL' }
-  },
-  {
-    'if'  : { 'GPL based license': 'no', 'changes release under a different license': 'limited' },
-    'then': { 'license': 'MPL' }
-  },
-  {
-    'if'  : { 'GPL based license': 'no', 'changes release under a different license': 'yes' },
-    'then': { 'license': 'Apache' }
-  },
-  {
     'if'  : { 'type': 'document-oriented', 'license': 'AGPL' },
     'then': { 'name': 'MongoDB' }
   },
@@ -50,6 +38,18 @@ var DB = [
   {
     'if'  : { 'type': 'document-oriented', 'license': 'Apache', 'commit hooks': 'no' },
     'then': { 'name': 'CouchDB' }
+  },
+  {
+    'if'  : { 'GPL based license': 'yes', 'changes release under a different license': 'no' },
+    'then': { 'license': 'AGPL' }
+  },
+  {
+    'if'  : { 'GPL based license': 'no', 'changes release under a different license': 'limited' },
+    'then': { 'license': 'MPL' }
+  },
+  {
+    'if'  : { 'GPL based license': 'no', 'changes release under a different license': 'yes' },
+    'then': { 'license': 'Apache' }
   }
 ];
 
