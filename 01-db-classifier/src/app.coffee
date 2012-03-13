@@ -1,14 +1,19 @@
 class Solver
-  ITERATION_LIMIT = 1000
+  ITERATION_LIMIT = 30
 
-  constructor: (db) ->
-    @db = $.extend [], db
+  constructor: (db, attrsMap, attrsToAsk, select, button, label) ->
+    @db = $.extend true, [], db
 
-    @input = $('#ask input')
-    @label = $('#ask label')
-    @button = $('#ask button')
+    @attrsMap   = attrsMap
+    @attrsToAsk = attrsToAsk
+
+    @select = select
+    @label  = label
+    @button = button
 
   resolve: (attr) ->
+    this.initControls()
+
     @finalTarget = attr
     @targets = [{ 'attr': @finalTarget }]
 
@@ -16,6 +21,11 @@ class Solver
     @knowns = {}
 
     this.iterate()
+
+  initControls: ->
+    @select.empty().attr('disabled', true).unbind '.ask'
+    @label.html ''
+    @button.html('next').attr('disabled', true).unbind '.ask'
 
   iterate: ->
     if (@iteration += 1) > ITERATION_LIMIT
@@ -34,7 +44,7 @@ class Solver
       this.processRule rule
       this.iterate()
     else
-      if target.attr != @finalTarget
+      if target.attr != @finalTarget and _.include(@attrsToAsk, target.attr)
         @targets.pop()
         this.ask(target.attr)
       else
@@ -71,6 +81,8 @@ class Solver
       alert @finalTarget + ' = ' + @knowns[@finalTarget]
     else
       alert "Can't resolve " + @finalTarget
+      
+    restartSolver()
 
   isKnown: (attr) ->
     _.has @knowns, attr
@@ -78,23 +90,24 @@ class Solver
   ask: (attr) ->
     this.log 'ask:\n\t' + attr
     @label.html attr
+
     @button.attr('disabled', false).bind 'click.ask', =>
       this.onAnswer(attr)
-    @input.attr('disabled', false).bind 'keypress.ask', (e) =>
+
+    @select.empty().attr('disabled', false).bind 'keypress.ask', (e) =>
       if e.keyCode == 13 then this.onAnswer(attr)
 
+    _.each @attrsMap[attr], (v) => $('<option>').html(v).appendTo(@select)
+
   onAnswer: (attr) ->
-    if value = $('#ask #value').val()
-      @knowns[attr] = value
+    this.log '\tanswer:\t' + @select.val()
 
-      this.log '\tanswer:\t' + value
-      @button.attr('disabled', true).unbind '.ask'
-      @input.attr('disabled', true).val('').unbind '.ask'
-      @label.html ''
+    @knowns[attr] = @select.val()
+    @button.attr('disabled', true).unbind '.ask'
+    @select.attr('disabled', true).empty().unbind '.ask'
+    @label.html ''
 
-      this.iterate()
-    else
-      alert "Attribute value can't be blank!"
+    this.iterate()
 
   str: (obj) ->
     JSON.stringify obj
@@ -102,6 +115,23 @@ class Solver
   log: (msg) ->
     console.log msg
 
+restartSolver = ->
+  select = $('#ask select').attr('disabled', false).empty()
+  button = $('#ask button').attr('disabled', false).html('start')
+  label  = $('#ask label').html 'attribute to resolve'
+
+  solver = new Solver(DB, ATTRIBUTES_MAP, ATTRIBUTES_TO_ASK, select, button, label)
+
+  _.each TARGET_ATTRIBUTES, (attr) -> select.append $('<option>').html(attr)
+
+  onClick = ->
+    button.unbind '.start'
+    select.unbind '.start'
+    solver.resolve select.val()
+
+  button.bind 'click.start', onClick
+  select.bind 'keypress.start', (e) -> if e.keyCode == 13 then onClick()
+
 $ ->
-  solver = new Solver(DB)
-  solver.resolve 'name'
+  $('#restart').click restartSolver
+  restartSolver()
