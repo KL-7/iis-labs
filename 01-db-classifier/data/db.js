@@ -8,11 +8,15 @@ var DB = [
     'then': { 'name': 'MySQL' }
   },
   {
-    'if'  : { 'type': 'key-value' },
+    'if'  : { 'type': 'key-value', 'proprietary': 'no' },
     'then': { 'name': 'Tokyo Cabinet' }
   },
   {
-    'if'  : { 'type': 'column-oriented', 'commercial': 'yes' },
+    'if'  : { 'type': 'key-value', 'proprietary': 'yes' },
+    'then': { 'name': 'Dynamo' }
+  },
+  {
+    'if'  : { 'type': 'column-oriented', 'proprietary': 'yes' },
     'then': { 'name': 'Greenplum' }
   },
   {
@@ -54,7 +58,7 @@ var TARGET_ATTRIBUTES = ['name', 'license']
 var ATTRIBUTES_TO_ASK = [
   'type',
   'ddl transactions',
-  'commercial',
+  'proprietary',
   'GPL based license',
   'changes release under a different license',
   'commit hooks'
@@ -64,7 +68,7 @@ var ATTRIBUTES_MAP = {
   'type':              ['column-oriented', 'relational', 'document-oriented', 'key-value'],
   'ddl transactions':  ['yes', 'no'],
   'GPL based license': ['yes', 'no'],
-  'commercial':        ['yes', 'no'],
+  'proprietary':       ['yes', 'no'],
   'license':           ['AGPL', 'Apache', 'MPL'],
   'commit hooks':      ['yes', 'no'],
   'changes release under a different license': ['yes', 'no', 'limited']
