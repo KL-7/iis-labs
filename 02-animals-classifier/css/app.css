@@ -1,0 +1,24 @@
+.content {
+  width: 700px;
+  margin: 100px auto 0;
+  padding: 10px 20px;
+  background-color: #E5E5E5;
+}
+
+.content > div {
+  margin: 20px 0;
+}
+
+.result button {
+  margin-bottom: 10px;
+}
+
+table {
+  text-align: center;
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 2px solid white;
+  padding: 5px;
+}
